@@ -104,15 +104,11 @@ disp(' '); disp(' ');
 disp('------------- Alinea d) -----------');    
     
 Av = [-3 4 1];
-disp('A v:')
-disp(Av);
 
-Bv = inv(aTb) * [ Av 1 ]';
+Bv = [ Av 1 ]';
 
 disp('B v:')
-disp(Bv(1:3)');
-
-% Nota: Não sei se está certo...
+disp(Bv);
 
 
 %% Visualização e Animação 
