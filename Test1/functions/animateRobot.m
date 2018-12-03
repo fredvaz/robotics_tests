@@ -19,7 +19,7 @@ T0_4 = T0_1 * T1_2 * T2_3 * T3_4;
 axis = [-8 8 -2 8 -2 8];
 
 % Referencial Home 
-trplot(T0, 'axis', axis, 'color', 'r', 'frame', 'T0', 'view', [15 10]);
+trplot(T0, 'axis', axis, 'color', 'r', 'frame', 'T0', 'view', [75 10]);
 hold on
 trplot(T0_1, 'axis', axis, 'color', 'g', 'frame', 'T1');
 hold on
