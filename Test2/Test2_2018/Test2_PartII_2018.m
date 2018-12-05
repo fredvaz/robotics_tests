@@ -8,41 +8,41 @@ format short
 disp('----------------------- Test 2 Part II - 2017 ---------------------')
 disp(' ')
 
-% Junta Rotacional ou Prismática:
-R = 1; P = 0;
-
-syms th1 th2 d
-% Offset/comprimentos dos elos (fixos)
-syms a b
-
-% T0_1
-Ti(:,:,1) = [ -sin(th1)  0 cos(th1) -a*cos(th1);
-               cos(th1)  0 sin(th1)  a*sin(th1);
-                      0  1        0           b; 
-                      0  0        0           1  ];
-% T1_2
-Ti(:,:,2) = [  cos(th2)   0 -sin(th2) 0;
-               sin(th2)   0  cos(th2) 0;
-                      0  -1         0 0; 
-                      0   0         0 1  ];
-% T2_E
-Ti(:,:,3) = [  0  1  0   0;
-              -1  0  0   0;
-               0  0  1   d; 
-               0  0  0   1  ];
-
-% T0_G = T0_1 * T1_2 * T2_E
-T0_G = Ti(:,:,1) * Ti(:,:,2) * Ti(:,:,3);
+% % Junta Rotacional ou Prismática:
+% R = 1; P = 0;
+% 
+% syms th1 th2 d
+% % Offset/comprimentos dos elos (fixos)
+% syms a b
+% 
+% % T0_1
+% Ti(:,:,1) = [ -sin(th1)  0 cos(th1) -a*cos(th1);
+%                cos(th1)  0 sin(th1)  a*sin(th1);
+%                       0  1        0           b; 
+%                       0  0        0           1  ];
+% % T1_2
+% Ti(:,:,2) = [  cos(th2)   0 -sin(th2) 0;
+%                sin(th2)   0  cos(th2) 0;
+%                       0  -1         0 0; 
+%                       0   0         0 1  ];
+% % T2_E
+% Ti(:,:,3) = [  0  1  0   0;
+%               -1  0  0   0;
+%                0  0  1   d; 
+%                0  0  0   1  ];
+% 
+% % T0_G = T0_1 * T1_2 * T2_E
+% T0_G = Ti(:,:,1) * Ti(:,:,2) * Ti(:,:,3);
 
 
 %% a) Jacobiano Geometrico do manipulador E J 6x3:
 % expressões para a velocidade de rotação das juntas 
 
 % Juntas em symbolic p/ resolver o Jacobiano
-q_aux = [ th1 th2 d ];
+q_aux = [ theta1 theta2 d3 theta4 theta5 theta6 ];
 
 % Matriz Jacobiana (Jacobiano na base)
-Jac_0 = Jacobian(T0_G, Ti, q_aux, [R R P]);
+Jac_0 = Jacobian(T0_G, Ti, q_aux, [R R P R R R]);
 
 % Jacobiano no end-effector E J 6x3 = G R 0 x 0 Jac
 R0_G = T0_G(1:3,1:3);
@@ -104,19 +104,39 @@ d_sol = simplify( solve(equation, d) )
 %% b) Configurações singulares de velocidade linear 
 
 % offset/comprimentos dos elos (fixos)
-a_ = 5; b_ = 1;
+%a_ = 5; b_ = 1;
 
 %R0_1 = eval(subs(Ti(1:3,1:3,1), [th1 a b], [0 a_ b_]);
 R0_1 = Ti(1:3,1:3,1);
 
 
-Jv_1 = simplify( inv(R0_1) * Jac_0(1:3,1:3) )
+Jv_1 = simplify( inv(R0_1) * Jac_0(1:3,1:6) )
 
 %Jv_1 = eval(subs(Jv_1, [th1 th2 d a], [0 0 0 a_] ))
 
 % De outra forma
 %D = simplify( det(Jv_1) ) 
-D = det(Jv_1)
+%D = det(Jv_1)
+
+syms dth1 dth2 dd3 dth5 dth6
+
+% theta 4 não mexe
+Jv_1 = eval(subs(Jv_1, theta4, 0));
+
+V = Jv_1 * [dth1 dth1 dd3 0 dth5 dth6]' % [0 0 0 0 0 0] %
+
+
+V = eval(subs(V, q_aux, [ 0 theta2 -lg 0 0 0]));
+
+%%
+equation_Vx = 0 == simplify( V(1) );
+sing_sol = simplify( solve(equation_Vx, d3) )
+
+equation_Vy = 0 == simplify( V(1) );
+sing_sol = simplify( solve(equation_Vy, d3) )
+
+equation_Vz = 0 == simplify( V(1) );
+sing_sol = simplify( solve(equation_Vz, d3) )
 
 
 %% Também podemos resolver o det = 0 e det. as juntas singulares)
