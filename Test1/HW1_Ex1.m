@@ -13,7 +13,7 @@ home = [ 1  0  0  0;
 %% Ex1
 
 % Eixo de Rotação em A
-r = [-1 1 0]';
+r = [0 0 1]';
 phi = deg2rad(45);
 
 % IMPORTANTE: a vectorRot já faz a normalização
